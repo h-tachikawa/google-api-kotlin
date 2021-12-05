@@ -1,7 +1,6 @@
-import api.ads.groupad.AdGroupAdClient
+import api.ads.adgroupad.AdGroupAdClient
 import api.datafeed.DatafeedClient
 import api.datafeed.status.DatafeedStatusClient
-import arrow.core.Either
 import arrow.core.none
 import arrow.core.None
 import arrow.core.Some

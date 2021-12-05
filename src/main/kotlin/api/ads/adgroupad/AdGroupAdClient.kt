@@ -1,4 +1,4 @@
-package api.ads.groupad
+package api.ads.adgroupad
 
 import com.google.ads.googleads.lib.GoogleAdsClient
 import com.google.ads.googleads.v9.services.SearchGoogleAdsRequest
