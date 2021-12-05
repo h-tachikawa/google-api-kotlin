@@ -1,10 +1,10 @@
-package api.ad.groupad
+package api.ads.groupad
 
 import com.google.ads.googleads.lib.GoogleAdsClient
-import com.google.ads.googleads.v9.services.GoogleAdsServiceClient
 import com.google.ads.googleads.v9.services.SearchGoogleAdsRequest
 import com.google.ads.googleads.v9.utils.ResourceNames
 import arrow.core.Either
+import com.google.ads.googleads.v9.resources.AdGroupAd
 
 class AdGroupAdClient {
     companion object {
@@ -15,7 +15,7 @@ class AdGroupAdClient {
 
         fun get(
             customerId: Long, adGroupId: Long, adGroupAdId: Long
-        ): Either<Exception, GoogleAdsServiceClient.SearchPagedResponse> {
+        ): Either<Exception, AdGroupAd> {
             val query = """
                 SELECT
                   ad_group_ad.status,
@@ -32,8 +32,11 @@ class AdGroupAdClient {
                 .build()
 
             try {
-                val result = client.search(request) ?: return Either.Left(NoSuchElementException("AdGroupAd not exists"))
-                return Either.Right(result)
+                val adGroupAd = client.search(request)
+                    .iterateAll()
+                    .map { it.adGroupAd }
+                    .first() ?: return Either.Left(NoSuchElementException("AdGroupAd not exists."))
+                return Either.Right(adGroupAd)
             } catch (e: com.google.api.gax.rpc.ApiException) {
                 return Either.Left(e)
             } catch (e: Exception) {

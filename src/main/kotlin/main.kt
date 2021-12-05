@@ -1,4 +1,4 @@
-import api.ad.groupad.AdGroupAdClient
+import api.ads.groupad.AdGroupAdClient
 import api.datafeed.DatafeedClient
 import api.datafeed.status.DatafeedStatusClient
 import arrow.core.Either
@@ -40,20 +40,8 @@ fun adsApiOps(args: Array<String>) {
         }
     }
 
-    val adGroupAdList = when (val res = AdGroupAdClient.get(customerId, adGroupId, adGroupAdId)) {
-        // FIXME: ここを型安全にできないか？(エラーを網羅しないとコンパイルエラーになるようにしたい)
-        is Either.Left -> when (res.value) {
-            is NoSuchElementException -> emptyList()
-            is com.google.api.gax.rpc.ApiException -> throw res.value
-            else -> throw IllegalStateException("unexpected error occurred.")
-        }
-        is Either.Right -> res.value.iterateAll()
-            .map { it.adGroupAd }
-    }
-
-    adGroupAdList.forEach {
-        println(it.toString())
-    }
+    val res = AdGroupAdClient.get(customerId, adGroupId, adGroupAdId)
+    println(res)
 }
 
 fun contentApiOps(args: Array<String>) {
