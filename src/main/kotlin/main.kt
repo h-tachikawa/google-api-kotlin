@@ -41,8 +41,10 @@ fun adsApiOps(args: Array<String>) {
     }
 
     val adGroupAdList = when (val res = AdGroupAdClient.get(customerId, adGroupId, adGroupAdId)) {
+        // FIXME: ここを型安全にできないか？(エラーを網羅しないとコンパイルエラーになるようにしたい)
         is Either.Left -> when (res.value) {
             is NoSuchElementException -> emptyList()
+            is com.google.api.gax.rpc.ApiException -> throw res.value
             else -> throw IllegalStateException("unexpected error occurred.")
         }
         is Either.Right -> res.value.iterateAll()

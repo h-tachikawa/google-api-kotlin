@@ -15,7 +15,7 @@ class AdGroupAdClient {
 
         fun get(
             customerId: Long, adGroupId: Long, adGroupAdId: Long
-        ): Either<RuntimeException, GoogleAdsServiceClient.SearchPagedResponse> {
+        ): Either<Exception, GoogleAdsServiceClient.SearchPagedResponse> {
             val query = """
                 SELECT
                   ad_group_ad.status,
@@ -31,8 +31,14 @@ class AdGroupAdClient {
                 .setQuery(query)
                 .build()
 
-            val result = client.search(request) ?: return Either.Left(NoSuchElementException("not exists"))
-            return Either.Right(result)
+            try {
+                val result = client.search(request) ?: return Either.Left(NoSuchElementException("AdGroupAd not exists"))
+                return Either.Right(result)
+            } catch (e: com.google.api.gax.rpc.ApiException) {
+                return Either.Left(e)
+            } catch (e: Exception) {
+                return Either.Left(e)
+            }
         }
     }
 }
