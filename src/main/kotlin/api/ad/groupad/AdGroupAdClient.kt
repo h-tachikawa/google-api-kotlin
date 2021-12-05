@@ -8,7 +8,9 @@ import arrow.core.Either
 
 class AdGroupAdClient {
     companion object {
-        private val client = GoogleAdsClient.newBuilder().fromEnvironment().fromPropertiesFile()
+        private val client = GoogleAdsClient.newBuilder()
+            .fromEnvironment()
+            .fromPropertiesFile()
             .build().latestVersion.createGoogleAdsServiceClient()
 
         fun get(
@@ -24,8 +26,10 @@ class AdGroupAdClient {
                   ad_group_ad.resource_name = '${ResourceNames.adGroupAd(customerId, adGroupId, adGroupAdId)}'
             """
 
-            val request =
-                SearchGoogleAdsRequest.newBuilder().setCustomerId(customerId.toString()).setQuery(query).build()
+            val request = SearchGoogleAdsRequest.newBuilder()
+                .setCustomerId(customerId.toString())
+                .setQuery(query)
+                .build()
 
             val result = client.search(request) ?: return Either.Left(NoSuchElementException("not exists"))
             return Either.Right(result)

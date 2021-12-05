@@ -47,7 +47,8 @@ fun adsApiOps(args: Array<String>) {
             is NoSuchElementException -> emptyList()
             else -> throw IllegalStateException("unexpected error occurred.")
         }
-        is Either.Right -> res.value.iterateAll().map { it.adGroupAd }
+        is Either.Right -> res.value.iterateAll()
+            .map { it.adGroupAd }
     }
 
     adGroupAdList.forEach {
