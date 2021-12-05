@@ -40,9 +40,7 @@ fun adsApiOps(args: Array<String>) {
         }
     }
 
-    val res = AdGroupAdClient.get(customerId, adGroupId, adGroupAdId) ?: return
-
-    val adGroupAdList = when (res) {
+    val adGroupAdList = when (val res = AdGroupAdClient.get(customerId, adGroupId, adGroupAdId)) {
         is Either.Left -> when (res.value) {
             is NoSuchElementException -> emptyList()
             else -> throw IllegalStateException("unexpected error occurred.")
