@@ -6,6 +6,13 @@ import com.google.ads.googleads.v9.utils.ResourceNames
 import arrow.core.Either
 import com.google.ads.googleads.v9.resources.AdGroupAd
 
+// Union Type を Kotlin の sealed class で表現している
+sealed class GoogleAdsError {
+    data class ApiError(val reason: Exception): GoogleAdsError()
+    data class AdNotExistsError(val msg: String): GoogleAdsError()
+    data class UnknownError(val reason: Exception): GoogleAdsError()
+}
+
 class AdGroupAdClient {
     companion object {
         private val client = GoogleAdsClient.newBuilder()
@@ -15,7 +22,7 @@ class AdGroupAdClient {
 
         fun get(
             customerId: Long, adGroupId: Long, adGroupAdId: Long
-        ): Either<Exception, AdGroupAd> {
+        ): Either<GoogleAdsError, AdGroupAd> {
             val query = """
                 SELECT
                   ad_group_ad.status,
@@ -35,12 +42,12 @@ class AdGroupAdClient {
                 val adGroupAd = client.search(request)
                     .iterateAll()
                     .map { it.adGroupAd }
-                    .first() ?: return Either.Left(NoSuchElementException("AdGroupAd not exists."))
+                    .first() ?: return Either.Left(GoogleAdsError.AdNotExistsError("AdGroupAd not exists."))
                 return Either.Right(adGroupAd)
             } catch (e: com.google.api.gax.rpc.ApiException) {
-                return Either.Left(e)
+                return Either.Left(GoogleAdsError.ApiError(e))
             } catch (e: Exception) {
-                return Either.Left(e)
+                return Either.Left(GoogleAdsError.UnknownError(e))
             }
         }
     }

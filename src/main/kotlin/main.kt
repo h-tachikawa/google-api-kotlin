@@ -1,9 +1,8 @@
 import api.ads.adgroupad.AdGroupAdClient
+import api.ads.adgroupad.GoogleAdsError
 import api.datafeed.DatafeedClient
 import api.datafeed.status.DatafeedStatusClient
-import arrow.core.none
-import arrow.core.None
-import arrow.core.Some
+import arrow.core.*
 
 fun main(args: Array<String>) {
     adsApiOps(args)
@@ -39,8 +38,15 @@ fun adsApiOps(args: Array<String>) {
         }
     }
 
-    val res = AdGroupAdClient.get(customerId, adGroupId, adGroupAdId)
-    println(res)
+    AdGroupAdClient.get(customerId, adGroupId, adGroupAdId)
+        .tapLeft {
+            when (it) {
+                is GoogleAdsError.AdNotExistsError -> TODO()
+                is GoogleAdsError.ApiError -> TODO()
+                is GoogleAdsError.UnknownError -> TODO()
+            }
+        }
+        .tap { println(it) }
 }
 
 fun contentApiOps(args: Array<String>) {
